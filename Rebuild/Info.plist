@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>MAFTrampolinePrefPane</string>
+	<key>CFBundleIconFile</key>
+	<string>ProductIcon.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.avid.prefpane.{F4CDDB0D-C92E-4914-82D7-178F384992DF}.rebuilt64</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Avid 003 Family</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.8</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.8</string>
+	<key>NSMainNibFile</key>
+	<string>MAFTrampolinePrefPane</string>
+	<key>NSPrefPaneIconFile</key>
+	<string>ProductIcon.icns</string>
+	<key>NSPrefPaneIconLabel</key>
+	<string>Avid 003
+Family</string>
+	<key>NSPrincipalClass</key>
+	<string>MAFTrampolinePrefPane003</string>
+</dict>
+</plist>
