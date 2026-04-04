@@ -7,4 +7,4 @@
   Launch control Panel from there and select device. 
   Change Sample rate, Clock Source and Optical Format Just like before!
   Requires you install drivers manually or from: 
-  [](https://neyrinck.com/downloads/digihelper/)
+  https://neyrinck.com/downloads/digihelper/
