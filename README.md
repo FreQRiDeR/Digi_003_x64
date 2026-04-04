@@ -1,5 +1,5 @@
 <div align="center">
-             <img src="window1.png" width="400" />
+             <img src="/window1.png" width="400" />
              <h1>Digi_003_x64</h1>
 </div>
 
