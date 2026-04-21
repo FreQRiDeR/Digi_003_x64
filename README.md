@@ -5,7 +5,7 @@
 
 * Digi 002, 003 64 bit PreferencePane for macOS
 * Ported from 32 bit PreferencePane
-* Control Digi 002, 003 just kike before!
+* Control Digi 002, 003 just like before!
 * Download and install pkg.
 * It will show up in System Preferences!
 * Launch control Panel from there and select device. 
