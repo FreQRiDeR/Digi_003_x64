@@ -19,7 +19,7 @@ BUILD FROM SOURCE
 * cd Digi_003_x64/Rebuild
 * run './build.sh'
 * copy PrefsPane to /Library/PreferencePanes.
-* Optionally, run ./package.sh and install created package.
+* Optionally, run './package.sh' and install created package.
 
 By FreQRiDeR & GitHub Copilot
 
