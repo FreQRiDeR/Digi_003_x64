@@ -18,8 +18,8 @@ BUILD FROM SOURCE
 * git clone https://github.com/FreQRiDeR/Digi_003_x64
 * cd Digi_003_x64/Rebuild
 * run './build.sh'
-* copy PrefsPane to /Library/PreferencePanes
-* Optionally, run ./packahe.sh and install created package
+* copy PrefsPane to /Library/PreferencePanes.
+* Optionally, run ./package.sh and install created package.
 
 By FreQRiDeR & GitHub Copilot
 
