@@ -9,19 +9,19 @@
 	<key>CFBundleIconFile</key>
 	<string>ProductIcon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.avid.prefpane.{F4CDDB0D-C92E-4914-82D7-178F384992DF}.rebuilt64</string>
+	<string>com.Digi.prefpane.rebuilt64</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Avid 003 Family</string>
+	<string>Digi 003 Family</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.8</string>
+	<string>2.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.8</string>
+	<string>2.0.0</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.15</string>
 	<key>NSMainNibFile</key>
@@ -29,7 +29,7 @@
 	<key>NSPrefPaneIconFile</key>
 	<string>ProductIcon.icns</string>
 	<key>NSPrefPaneIconLabel</key>
-	<string>Avid 003
+	<string>Digi 003
 Family</string>
 	<key>NSPrincipalClass</key>
 	<string>MAFTrampolinePrefPane003</string>

@@ -4,15 +4,15 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Resources/Avid003ControlPanel.app/Contents/Info.plist</key>
+		<key>Resources/Digi003ControlPanel.app/Contents/Info.plist</key>
 		<data>
-		pOsACj0eWyaFssqcywzPn20jWt4=
+		eP9l8KGe1oLl6jkIFhDSwfrWZ7Q=
 		</data>
-		<key>Resources/Avid003ControlPanel.app/Contents/MacOS/Avid003ControlPanel</key>
+		<key>Resources/Digi003ControlPanel.app/Contents/MacOS/Digi003ControlPanel</key>
 		<data>
-		dYPVWeP4J3j+Qc0N69Hdw2tNs5c=
+		L2QDacNsPzV/HJg+QOcDM9hsCmU=
 		</data>
-		<key>Resources/Avid003ControlPanel.app/Contents/Resources/ProductIcon.icns</key>
+		<key>Resources/Digi003ControlPanel.app/Contents/Resources/ProductIcon.icns</key>
 		<data>
 		p+yynUOnU91QlV5KJKuErACqDzY=
 		</data>
@@ -20,7 +20,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			6iT6FsRYw2wvB5jXmXqbIPr6usw=
+			NYeA0QdYgGciKTjabbJpFx80gxs=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -50,21 +50,21 @@
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Resources/Avid003ControlPanel.app/Contents/Info.plist</key>
+		<key>Resources/Digi003ControlPanel.app/Contents/Info.plist</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Nph54X9JLYifJvLjMusCa74WgDZg40WBcffgvNgDsHA=
+			9WzGJZr2iAL7mNUtGaKmKmP0Don/34uKD67Ia7clAHM=
 			</data>
 		</dict>
-		<key>Resources/Avid003ControlPanel.app/Contents/MacOS/Avid003ControlPanel</key>
+		<key>Resources/Digi003ControlPanel.app/Contents/MacOS/Digi003ControlPanel</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			sed6IsiiMliKsDTiTLc/xU/JhjdmDnMuq+exe7zl/og=
+			iBKXH2IGcbHiep7y8biGKiXPiSES0cYHk5maW3bstDY=
 			</data>
 		</dict>
-		<key>Resources/Avid003ControlPanel.app/Contents/Resources/ProductIcon.icns</key>
+		<key>Resources/Digi003ControlPanel.app/Contents/Resources/ProductIcon.icns</key>
 		<dict>
 			<key>hash2</key>
 			<data>
@@ -75,7 +75,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			SsTorB6qmHm2nH3M8mPO6zBPTG2FNlwTjp9suFKiCcE=
+			OfyNZbXRLLpjzKvvL2iR7WBf4wCvsSq6aMbiwNghatQ=
 			</data>
 			<key>optional</key>
 			<true/>
