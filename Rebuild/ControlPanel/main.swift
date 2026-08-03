@@ -67,7 +67,7 @@ private func cfStringProperty(_ objectID: AudioObjectID, selector: AudioObjectPr
     return value?.takeRetainedValue() as String? ?? "Unknown"
 }
 
-private func allOutputDevices() throws -> [DeviceInfo] {
+private func findDevices() throws -> [DeviceInfo] {
     var address = AudioObjectPropertyAddress(
         mSelector: kAudioHardwarePropertyDevices,
         mScope: kAudioObjectPropertyScopeGlobal,
@@ -85,29 +85,36 @@ private func allOutputDevices() throws -> [DeviceInfo] {
 
     var devices: [DeviceInfo] = []
     for id in ids where id != 0 {
-        let name = (try? cfStringProperty(id, selector: kAudioObjectPropertyName)) ?? "Device \(id)"
-        devices.append(DeviceInfo(id: id, name: name))
+        if let name = try? cfStringProperty(id, selector: kAudioObjectPropertyName) {
+            devices.append(DeviceInfo(id: id, name: name))
+        }
     }
 
-    let filtered = devices.filter { info in
+    return devices.filter { info in
         let lower = info.name.lowercased()
         return deviceFilterTokens.contains { lower.contains($0) }
     }
-    if !filtered.isEmpty {
-        return filtered
-    }
-    return devices
 }
 
 private func currentSampleRate(deviceID: AudioDeviceID) throws -> Double {
-    var address = AudioObjectPropertyAddress(
-        mSelector: kAudioDevicePropertyNominalSampleRate,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
-    )
     var rate = Float64(0)
     var size = UInt32(MemoryLayout<Float64>.size)
-    let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &rate)
+
+    var address = AudioObjectPropertyAddress(
+        mSelector: kAudioDevicePropertyNominalSampleRate,
+        mScope: kAudioDevicePropertyScopeOutput,
+        mElement: kAudioObjectPropertyElementMain
+    )
+
+    // Try reading output sample rate
+    var status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &rate)
+
+    if status != noErr {
+        // Fallback to global scope
+        address.mScope = kAudioObjectPropertyScopeGlobal
+        status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &rate)
+    }
+
     try checkStatus(status, "Read current sample rate")
     return rate
 }
@@ -708,15 +715,32 @@ private func availableSampleRates(deviceID: AudioDeviceID) throws -> [Double] {
 }
 
 private func setSampleRate(deviceID: AudioDeviceID, rate: Double) throws {
-    var address = AudioObjectPropertyAddress(
-        mSelector: kAudioDevicePropertyNominalSampleRate,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
-    )
     var value = Float64(rate)
     let size = UInt32(MemoryLayout<Float64>.size)
-    let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, size, &value)
-    try checkStatus(status, "Set sample rate")
+    var success = false
+    var lastError: OSStatus = noErr
+
+    var addr = AudioObjectPropertyAddress(
+        mSelector: kAudioDevicePropertyNominalSampleRate,
+        mScope: kAudioObjectPropertyScopeGlobal, // placeholder
+        mElement: kAudioObjectPropertyElementMain
+    )
+
+    let scopes = [kAudioObjectPropertyScopeGlobal, kAudioDevicePropertyScopeOutput, kAudioDevicePropertyScopeInput]
+
+    for scope in scopes {
+        addr.mScope = scope
+        let status = AudioObjectSetPropertyData(deviceID, &addr, 0, nil, size, &value)
+        if status == noErr {
+            success = true
+        } else {
+            lastError = status
+        }
+    }
+
+    if !success {
+        try checkStatus(lastError, "Set sample rate")
+    }
 }
 
 private func currentClockSource(deviceID: AudioDeviceID) throws -> UInt32 {
@@ -820,7 +844,7 @@ final class PanelController: NSObject, NSApplicationDelegate {
 
     @objc private func reloadAll() {
         do {
-            devices = try allOutputDevices()
+            devices = try findDevices()
             devicePopup.removeAllItems()
             for device in devices {
                 devicePopup.addItem(withTitle: device.name)
@@ -999,6 +1023,24 @@ final class PanelController: NSObject, NSApplicationDelegate {
 
     private func buildUI() {
         NSApp.setActivationPolicy(.regular)
+        
+        let mainMenu = NSMenu()
+        NSApp.mainMenu = mainMenu
+        
+        let appMenu = NSMenu()
+        let appMenuItem = NSMenuItem()
+        appMenuItem.submenu = appMenu
+        mainMenu.addItem(appMenuItem)
+        
+        let appName = ProcessInfo.processInfo.processName
+        
+        let hideItem = NSMenuItem(title: "Hide \(appName)", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(hideItem)
+        
+        appMenu.addItem(NSMenuItem.separator())
+        
+        let quitItem = NSMenuItem(title: "Quit \(appName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(quitItem)
 
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 620, height: 240),
@@ -1006,7 +1048,7 @@ final class PanelController: NSObject, NSApplicationDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "Avid 003 Family Control Panel (64-bit)"
+        window.title = "Digi 003 Family Control Panel (64-bit)"
         window.center()
 
         guard let content = window.contentView else {

@@ -3,11 +3,11 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RESOURCE_DIR="${ROOT_DIR}/PrefPaneResources"
-OUTPUT_PANE="${ROOT_DIR}/../Avid 003 Family 64.prefPane"
+OUTPUT_PANE="${ROOT_DIR}/../Digi 003 Family 64.prefPane"
 SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
 MODULE_CACHE_DIR="${ROOT_DIR}/.module-cache"
-CONTROL_PANEL_APP="${OUTPUT_PANE}/Contents/Resources/Avid003ControlPanel.app"
-CONTROL_PANEL_BIN="${CONTROL_PANEL_APP}/Contents/MacOS/Avid003ControlPanel"
+CONTROL_PANEL_APP="${OUTPUT_PANE}/Contents/Resources/Digi003ControlPanel.app"
+CONTROL_PANEL_BIN="${CONTROL_PANEL_APP}/Contents/MacOS/Digi003ControlPanel"
 MIN_MACOS_X86_64="10.15"
 INSTALL_MODE="none"
 

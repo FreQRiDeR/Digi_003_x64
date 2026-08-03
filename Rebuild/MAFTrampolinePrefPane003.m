@@ -1,8 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import <PreferencePanes/PreferencePanes.h>
 
-static NSString * const kPanelBundleIdentifier = @"com.avid.panel.{F4CDDB0D-C92E-4914-82D7-178F384992DF}";
-static NSString * const kDeviceDomainIdentifier = @"com.avid.device.{F4CDDB0D-C92E-4914-82D7-178F384992DF}";
+static NSString * const kPanelBundleIdentifier = @"com.digi.panel.{F4CDDB0D-C92E-4914-82D7-178F384992DF}";
+static NSString * const kDeviceDomainIdentifier = @"com.digi.device.{F4CDDB0D-C92E-4914-82D7-178F384992DF}";
 static NSString * const kDeviceFamilyNameKey = @"Device Family Name";
 
 @interface MAFTrampolinePrefPane003 : NSPreferencePane
@@ -28,7 +28,7 @@ static NSString * const kDeviceFamilyNameKey = @"Device Family Name";
         return [workspace openURL:appURL];
     }
 
-    NSString *embeddedAppPath = [[self bundle] pathForResource:@"Avid003ControlPanel" ofType:@"app"];
+    NSString *embeddedAppPath = [[self bundle] pathForResource:@"Digi003ControlPanel" ofType:@"app"];
     if (embeddedAppPath != nil) {
         NSURL *embeddedURL = [NSURL fileURLWithPath:embeddedAppPath];
         if ([workspace openURL:embeddedURL]) {

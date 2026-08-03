@@ -52,7 +52,7 @@ func getU32(_ id: AudioObjectID, _ sel: AudioObjectPropertySelector) -> UInt32 {
     return st == noErr ? v : 0
 }
 
-func findAvidDevice() -> AudioObjectID? {
+func findDigiDevice() -> AudioObjectID? {
     for d in getDevices() where d != 0 {
         let n = getName(d).lowercased()
         if n.contains("avid") || n.contains("digi") || n.contains("002") || n.contains("003") {
@@ -74,8 +74,8 @@ func getControls(_ dev: AudioObjectID) -> [AudioObjectID] {
 let scopes: [AudioObjectPropertyScope] = [kAudioObjectPropertyScopeGlobal, kAudioDevicePropertyScopeInput, kAudioDevicePropertyScopeOutput, kAudioDevicePropertyScopePlayThrough]
 let elements: [AudioObjectPropertyElement] = [kAudioObjectPropertyElementMain, 1,2,3,4,5,6,7,8]
 
-guard let dev = findAvidDevice() else {
-    print("No Avid device")
+guard let dev = findDigiDevice() else {
+    print("No Digi device")
     exit(0)
 }
 print("Device \(dev): \(getName(dev))")

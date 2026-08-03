@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OUTPUT_PANE="${ROOT_DIR}/../Avid 003 Family 64.prefPane"
-DEFAULT_PKG_PATH="${ROOT_DIR}/../Avid 003 Family 64 Installer.pkg"
-PKG_IDENTIFIER="com.avid.003family.prefpane64"
+OUTPUT_PANE="${ROOT_DIR}/../Digi 003 Family 64.prefPane"
+DEFAULT_PKG_PATH="${ROOT_DIR}/../Digi 003 Family 64 Installer.pkg"
+PKG_IDENTIFIER="com.digi.003family.prefpane64"
 PKG_PATH="${DEFAULT_PKG_PATH}"
 MIN_MACOS_X86_64="10.15"
 SKIP_BUILD=0
@@ -63,7 +63,7 @@ if [[ -z "${PKG_VERSION}" ]]; then
   PKG_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "${OUTPUT_PANE}/Contents/Info.plist" 2>/dev/null || true)"
 fi
 if [[ -z "${PKG_VERSION}" ]]; then
-  PKG_VERSION="1.0.0"
+  PKG_VERSION="2.0.0"
 fi
 
 mkdir -p "$(dirname "${PKG_PATH}")"
