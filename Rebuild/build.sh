@@ -88,6 +88,11 @@ clang \
   "${ROOT_DIR}/MAFTrampolinePrefPane003.m" \
   -o "${OUTPUT_PANE}/Contents/MacOS/MAFTrampolinePrefPane"
 
+# ---> NEW: Explicitly strip detritus from compiled bundle prior to codesign
+echo "Scrubbing filesystem detritus inside build directory..."
+xattr -cr "${OUTPUT_PANE}" || true
+find "${OUTPUT_PANE}" -type f -name "._*" -delete || true
+
 codesign --force --deep --sign - "${OUTPUT_PANE}"
 
 echo "Built: ${OUTPUT_PANE}"
