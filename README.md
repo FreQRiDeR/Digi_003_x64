@@ -10,8 +10,8 @@
 * It will show up in System Preferences!
 * Launch control Panel from there and select device. 
 * Change Sample rate, Clock Source and Optical Format Just like before!
-* Requires you to install drivers manually or from: 
-* https://neyrinck.com/downloads/digihelper/
+* Download latest release package and install.
+* Requires you to install drivers manually or from: https://neyrinck.com/downloads/digihelper/
 
 BUILD FROM SOURCE
 -----------------------------------------------------
