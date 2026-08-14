@@ -1,1 +1,25 @@
 Digi 003 Family 64 Installer.pkg
+Digi 003 Family 64.prefPane/Contents/_CodeSignature/CodeResources
+Digi 003 Family 64.prefPane/Contents/Info.plist
+Digi 003 Family 64.prefPane/Contents/MacOS/MAFTrampolinePrefPane
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/Info.plist
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/MacOS/Digi003ControlPanel
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/Resources/DIGI002_Console.png
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/Resources/DIGI002_Rack.png
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/Resources/DIGI003_Console.png
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/Resources/DIGI003_Rack.png
+Digi 003 Family 64.prefPane/Contents/Resources/Digi003ControlPanel.app/Contents/Resources/ProductIcon.icns
+Digi 003 Family 64.prefPane/Contents/Resources/English.lproj/InfoPlist.strings
+Digi 003 Family 64.prefPane/Contents/Resources/English.lproj/Localizable.strings
+Digi 003 Family 64.prefPane/Contents/Resources/English.lproj/MAFTrampolinePrefPane.nib
+Digi 003 Family 64.prefPane/Contents/Resources/ProductIcon.icns
+Digi 003 Family Control Panel Preview.app/Contents/_CodeSignature/CodeResources
+Digi 003 Family Control Panel Preview.app/Contents/Info.plist
+Digi 003 Family Control Panel Preview.app/Contents/MacOS/Digi003ControlPanelPreview
+Digi 003 Family Control Panel Preview.app/Contents/Resources/DIGI002_Console.png
+Digi 003 Family Control Panel Preview.app/Contents/Resources/DIGI002_Rack.png
+Digi 003 Family Control Panel Preview.app/Contents/Resources/DIGI003_Console.png
+Digi 003 Family Control Panel Preview.app/Contents/Resources/DIGI003_Rack.png
+Digi 003 Family Control Panel Preview.app/Contents/Resources/ProductIcon.icns
+Rebuild/build_preview.sh
+Rebuild/ControlPanel/mock.swift
