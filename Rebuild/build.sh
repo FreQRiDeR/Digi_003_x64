@@ -34,9 +34,23 @@ required_resources=(
   "${RESOURCE_DIR}/English.lproj/Localizable.strings"
 )
 
+device_images=(
+  "DIGI003_Rack.png"
+  "DIGI002_Rack.png"
+  "DIGI002_Console.png"
+  "DIGI003_Console.png"
+)
+
 for resource in "${required_resources[@]}"; do
   if [[ ! -e "${resource}" ]]; then
     echo "Missing required resource: ${resource}" >&2
+    exit 1
+  fi
+done
+
+for image in "${device_images[@]}"; do
+  if [[ ! -e "${ROOT_DIR}/../Devices/${image}" ]]; then
+    echo "Missing device image: ${ROOT_DIR}/../Devices/${image}" >&2
     exit 1
   fi
 done
@@ -58,6 +72,9 @@ cp "${RESOURCE_DIR}/English.lproj/Localizable.strings" \
   "${OUTPUT_PANE}/Contents/Resources/English.lproj/Localizable.strings"
 cp "${ROOT_DIR}/ControlPanel/Info.plist" "${CONTROL_PANEL_APP}/Contents/Info.plist"
 cp "${RESOURCE_DIR}/ProductIcon.icns" "${CONTROL_PANEL_APP}/Contents/Resources/ProductIcon.icns"
+for image in "${device_images[@]}"; do
+  cp "${ROOT_DIR}/../Devices/${image}" "${CONTROL_PANEL_APP}/Contents/Resources/${image}"
+done
 
 /usr/libexec/PlistBuddy -c "Delete :LSMinimumSystemVersion" "${OUTPUT_PANE}/Contents/Info.plist" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Add :LSMinimumSystemVersion string ${MIN_MACOS_X86_64}" "${OUTPUT_PANE}/Contents/Info.plist"

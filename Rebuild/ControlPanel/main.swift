@@ -2,7 +2,8 @@ import AppKit
 import CoreAudio
 import IOKit
 
-private let deviceFilterTokens = ["avid", "digi", "003", "002"]
+// The control panel supports only Avid-branded Digi 002/003 hardware.
+private let deviceFilterTokens = ["avid"]
 
 private struct DeviceInfo {
     let id: AudioDeviceID
@@ -93,6 +94,7 @@ private func findDevices() throws -> [DeviceInfo] {
     return devices.filter { info in
         let lower = info.name.lowercased()
         return deviceFilterTokens.contains { lower.contains($0) }
+            && (lower.contains("002") || lower.contains("003"))
     }
 }
 
@@ -821,14 +823,82 @@ private func formatRate(_ rate: Double) -> String {
     return String(format: "%.2f Hz", rate)
 }
 
+private func deviceImageResourceName(for deviceName: String) -> String? {
+    let name = deviceName.lowercased()
+    let isRack = name.contains("rack")
+
+    if name.contains("002") {
+        return isRack ? "DIGI002_Rack" : "DIGI002_Console"
+    }
+    if name.contains("003") {
+        return isRack ? "DIGI003_Rack" : "DIGI003_Console"
+    }
+    return nil
+}
+
+private final class ConnectionIndicatorView: NSView {
+    private var connected = false
+
+    override var isFlipped: Bool { false }
+
+    func setConnected(_ connected: Bool) {
+        guard self.connected != connected else { return }
+        self.connected = connected
+        needsDisplay = true
+        setAccessibilityLabel(connected ? "Digi 002/003 connected" : "Digi 002/003 not connected")
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        let bounds = self.bounds.insetBy(dx: 0.5, dy: 0.5)
+        let box = NSRect(x: bounds.maxX - 80, y: bounds.minY, width: 80, height: bounds.height)
+        let path = NSBezierPath(roundedRect: box, xRadius: 4, yRadius: 4)
+        NSColor(calibratedWhite: 0.42, alpha: 1).setStroke()
+        path.lineWidth = 0.75
+        path.stroke()
+
+        let textAttributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.boldSystemFont(ofSize: 10),
+            .foregroundColor: connected
+                ? NSColor(calibratedRed: 0.25, green: 0.76, blue: 0.36, alpha: 1)
+                : NSColor(calibratedWhite: 0.60, alpha: 1)
+        ]
+        let text = "CONNECTED"
+        let textSize = (text as NSString).size(withAttributes: textAttributes)
+        let textRect = NSRect(
+            x: box.midX - textSize.width / 2,
+            y: bounds.midY - textSize.height / 2,
+            width: textSize.width,
+            height: textSize.height
+        )
+        (text as NSString).draw(in: textRect, withAttributes: textAttributes)
+
+        let deviceText = "Digi 002/003"
+        let deviceAttributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.boldSystemFont(ofSize: 10),
+            .foregroundColor: NSColor.secondaryLabelColor
+        ]
+        let deviceSize = (deviceText as NSString).size(withAttributes: deviceAttributes)
+        let deviceRect = NSRect(
+            x: box.minX - 8 - deviceSize.width,
+            y: textRect.origin.y,
+            width: deviceSize.width,
+            height: textSize.height
+        )
+        (deviceText as NSString).draw(in: deviceRect, withAttributes: deviceAttributes)
+    }
+}
+
 final class PanelController: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
     private let statusLabel = NSTextField(labelWithString: "")
-    private let devicePopup = NSPopUpButton()
+    private let deviceNameLabel = NSTextField(labelWithString: "None")
+    private let deviceImageView = NSImageView()
     private let sampleRatePopup = NSPopUpButton()
     private let opticalFormatPopup = NSPopUpButton()
     private let clockSourcePopup = NSPopUpButton()
     private let refreshButton = NSButton(title: "Refresh", target: nil, action: nil)
+    private let connectionIndicator = ConnectionIndicatorView()
+    private var connectionTimer: Timer?
 
     private var devices: [DeviceInfo] = []
     private var sampleRates: [Double] = []
@@ -840,36 +910,31 @@ final class PanelController: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         buildUI()
         reloadAll()
+        connectionTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.pollForDeviceChanges()
+        }
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        connectionTimer?.invalidate()
     }
 
     @objc private func reloadAll() {
         do {
             devices = try findDevices()
-            devicePopup.removeAllItems()
-            for device in devices {
-                devicePopup.addItem(withTitle: device.name)
-            }
+            updateConnectionStatus()
             if devices.isEmpty {
-                setStatus("No audio devices found.")
-                sampleRatePopup.removeAllItems()
-                opticalFormatPopup.removeAllItems()
-                clockSourcePopup.removeAllItems()
+                deviceNameLabel.stringValue = "None"
+                deviceImageView.image = nil
+                deviceImageView.isHidden = true
+                setStatus("No Avid Digi 002/003 device connected.")
+                clearDeviceControls()
                 return
             }
-            if devicePopup.indexOfSelectedItem < 0 {
-                devicePopup.selectItem(at: 0)
-            }
+            deviceNameLabel.stringValue = devices[0].name
+            updateDeviceImage(for: devices[0].name)
             try reloadForCurrentDevice()
             setStatus("Ready.")
-        } catch {
-            setStatus("Error: \(errorDescription(error))")
-        }
-    }
-
-    @objc private func deviceChanged() {
-        do {
-            try reloadForCurrentDevice()
-            setStatus("Device changed.")
         } catch {
             setStatus("Error: \(errorDescription(error))")
         }
@@ -946,13 +1011,14 @@ final class PanelController: NSObject, NSApplicationDelegate {
     }
 
     private var selectedDeviceID: AudioDeviceID? {
-        let index = devicePopup.indexOfSelectedItem
-        guard index >= 0 && index < devices.count else { return nil }
-        return devices[index].id
+        return devices.first?.id
     }
 
     private func reloadForCurrentDevice() throws {
         guard let deviceID = selectedDeviceID else { return }
+
+        sampleRatePopup.isEnabled = true
+        clockSourcePopup.isEnabled = true
 
         sampleRates = try availableSampleRates(deviceID: deviceID)
         let currentRate = try currentSampleRate(deviceID: deviceID)
@@ -1021,6 +1087,45 @@ final class PanelController: NSObject, NSApplicationDelegate {
         statusLabel.stringValue = text
     }
 
+    private func updateDeviceImage(for deviceName: String) {
+        guard let resourceName = deviceImageResourceName(for: deviceName),
+              let resourceURL = Bundle.main.url(forResource: resourceName, withExtension: "png"),
+              let image = NSImage(contentsOf: resourceURL) else {
+            deviceImageView.image = nil
+            deviceImageView.isHidden = true
+            return
+        }
+        deviceImageView.image = image
+        // Console photos are taller than the rack photos, so give them a little
+        // more vertical room in the same upper-right void.
+        deviceImageView.frame = resourceName.contains("Console")
+            ? NSRect(x: 365, y: 48, width: 235, height: 120)
+            : NSRect(x: 350, y: 69, width: 250, height: 84)
+        deviceImageView.isHidden = false
+        deviceImageView.setAccessibilityLabel("Image of \(deviceName)")
+    }
+
+    private func clearDeviceControls() {
+        sampleRatePopup.removeAllItems()
+        opticalFormatPopup.removeAllItems()
+        clockSourcePopup.removeAllItems()
+        sampleRatePopup.isEnabled = false
+        opticalFormatPopup.isEnabled = false
+        clockSourcePopup.isEnabled = false
+    }
+
+    private func updateConnectionStatus() {
+        // This is deliberately the same list displayed in the Avid Device field.
+        connectionIndicator.setConnected(!devices.isEmpty)
+    }
+
+    private func pollForDeviceChanges() {
+        guard let discoveredDevices = try? findDevices() else { return }
+        if discoveredDevices.map(\.id) != devices.map(\.id) {
+            reloadAll()
+        }
+    }
+
     private func buildUI() {
         NSApp.setActivationPolicy(.regular)
         
@@ -1059,11 +1164,9 @@ final class PanelController: NSObject, NSApplicationDelegate {
         title.font = NSFont.boldSystemFont(ofSize: 18)
         title.frame = NSRect(x: 20, y: 196, width: 460, height: 24)
 
-        let deviceLabel = NSTextField(labelWithString: "Device:")
+        let deviceLabel = NSTextField(labelWithString: "Avid Device:")
         deviceLabel.frame = NSRect(x: 20, y: 156, width: 110, height: 24)
-        devicePopup.frame = NSRect(x: 140, y: 152, width: 300, height: 30)
-        devicePopup.target = self
-        devicePopup.action = #selector(deviceChanged)
+        deviceNameLabel.frame = NSRect(x: 140, y: 156, width: 300, height: 24)
 
         let sampleLabel = NSTextField(labelWithString: "Sample Rate:")
         sampleLabel.frame = NSRect(x: 20, y: 116, width: 110, height: 24)
@@ -1072,27 +1175,42 @@ final class PanelController: NSObject, NSApplicationDelegate {
         sampleRatePopup.action = #selector(sampleRateChanged)
 
         let opticalLabel = NSTextField(labelWithString: "Optical Format:")
-        opticalLabel.frame = NSRect(x: 340, y: 116, width: 100, height: 24)
-        opticalFormatPopup.frame = NSRect(x: 450, y: 112, width: 140, height: 30)
+        opticalLabel.frame = NSRect(x: 20, y: 76, width: 110, height: 24)
+        opticalFormatPopup.frame = NSRect(x: 140, y: 72, width: 180, height: 30)
         opticalFormatPopup.target = self
         opticalFormatPopup.action = #selector(opticalFormatChanged)
 
         let clockLabel = NSTextField(labelWithString: "Clock Source:")
-        clockLabel.frame = NSRect(x: 20, y: 76, width: 110, height: 24)
-        clockSourcePopup.frame = NSRect(x: 140, y: 72, width: 180, height: 30)
+        clockLabel.frame = NSRect(x: 20, y: 36, width: 110, height: 24)
+        clockSourcePopup.frame = NSRect(x: 140, y: 32, width: 180, height: 30)
         clockSourcePopup.target = self
         clockSourcePopup.action = #selector(clockSourceChanged)
 
-        refreshButton.frame = NSRect(x: 530, y: 152, width: 70, height: 30)
+        refreshButton.frame = NSRect(x: 530, y: 192, width: 70, height: 30)
         refreshButton.target = self
         refreshButton.action = #selector(reloadAll)
         refreshButton.bezelStyle = .rounded
 
-        statusLabel.frame = NSRect(x: 20, y: 20, width: 580, height: 40)
+        statusLabel.frame = NSRect(x: 20, y: 8, width: 300, height: 20)
         statusLabel.lineBreakMode = .byWordWrapping
-        statusLabel.maximumNumberOfLines = 2
+        statusLabel.maximumNumberOfLines = 1
 
-        [title, deviceLabel, devicePopup, sampleLabel, sampleRatePopup, opticalLabel, opticalFormatPopup, clockLabel, clockSourcePopup, refreshButton, statusLabel]
+        connectionIndicator.frame = NSRect(x: 408, y: 8, width: 192, height: 20)
+        connectionIndicator.wantsLayer = true
+        connectionIndicator.setAccessibilityElement(true)
+        connectionIndicator.setAccessibilityRole(.staticText)
+        connectionIndicator.setConnected(false)
+
+        // This is the original panel's unused upper-right area.  It keeps every
+        // image compact while preserving its original aspect ratio.
+        deviceImageView.frame = NSRect(x: 350, y: 63, width: 250, height: 84)
+        deviceImageView.imageScaling = .scaleProportionallyUpOrDown
+        deviceImageView.imageAlignment = .alignCenter
+        deviceImageView.setAccessibilityElement(true)
+        deviceImageView.setAccessibilityRole(.image)
+        deviceImageView.isHidden = true
+
+        [title, deviceLabel, deviceNameLabel, sampleLabel, sampleRatePopup, opticalLabel, opticalFormatPopup, clockLabel, clockSourcePopup, refreshButton, statusLabel, connectionIndicator, deviceImageView]
             .forEach { content.addSubview($0) }
 
         window.makeKeyAndOrderFront(nil)
