@@ -6,11 +6,10 @@
 * Digi 002, 003 64 bit PreferencePane for macOS
 * Ported from 32 bit PreferencePane
 * Control Digi 002, 003 just like before!
-* Download and install pkg.
+* Download 'Latest Release' and install pkg.
 * It will show up in System Preferences!
 * Launch control Panel from there and select device. 
 * Change Sample rate, Clock Source and Optical Format Just like before!
-* Download latest release package and install.
 * Requires you to install drivers manually or from: https://neyrinck.com/downloads/digihelper/
 
 BUILD FROM SOURCE
