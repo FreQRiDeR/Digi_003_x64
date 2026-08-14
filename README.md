@@ -3,7 +3,7 @@
              <h1>Digi_003_x64</h1>
 </div>
 
-* Digi 002, 003 64 bit PreferencePane for macOS
+* Digi 002, 003 64 bit PreferencePane for macOS (Tested on Sequoia)
 * Ported from 32 bit PreferencePane
 * Control Digi 002, 003 just like before!
 * Download 'Latest Release' and install pkg.
